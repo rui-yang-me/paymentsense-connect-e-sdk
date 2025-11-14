@@ -1,0 +1,74 @@
+# .github/workflows/maven-publish.yml
+name: Publish to Maven Central
+
+# 触发方式
+on:
+  push:
+    tags:
+      - 'v*'                     # 自动触发：git tag v1.0.0 → 自动发正式版
+
+  workflow_dispatch:            # 手动触发
+    inputs:
+      version:
+        description: '要发布的版本号（不需要 v 前缀）'
+        required: true
+        default: '1.0.0'
+        type: string
+      snapshot:
+        description: '是否发布为 SNAPSHOT 版？'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+
+      # 手动触发时自动修改 pom.xml 版本号
+      - name: Update version for manual run
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          VERSION="${{ inputs.version }}"
+          IS_SNAPSHOT="${{ inputs.snapshot }}"
+
+          if [[ "$IS_SNAPSHOT" == "true" ]]; then
+            NEW_VERSION="${VERSION}-SNAPSHOT"
+          else
+            NEW_VERSION="$VERSION"
+          fi
+
+          echo "即将发布版本 → $NEW_VERSION"
+
+          mvn -B versions:set -DnewVersion="$NEW_VERSION" -DgenerateBackupPoms=false
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "chore: set version to $NEW_VERSION (manual publish)" || echo "No changes to commit"
+
+      # 导入 GPG 私钥 + 执行发布
+      - name: Import GPG key & Publish to Maven Central
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          echo "$MAVEN_GPG_PRIVATE_KEY" | base64 -d | gpg --batch --import
+          mvn -B clean deploy
