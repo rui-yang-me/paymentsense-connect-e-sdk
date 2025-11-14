@@ -8,23 +8,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Response from creating a payment token.
+ * Shipping details information.
+ *
+ * @author Paymentsense SDK Team
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaymentTokenResponse {
+public class ShippingDetails {
     /**
-     * The unique payment token ID (also used as access token)
+     * Recipient name
      */
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("Name")
+    private String name;
 
     /**
-     * Unix timestamp when the token expires
+     * Shipping address
      */
-    @JsonProperty("expiresAt")
-    private Long expiresAt;
+    @JsonProperty("Address")
+    private Address address;
 }

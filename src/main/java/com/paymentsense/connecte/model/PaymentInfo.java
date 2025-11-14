@@ -1,5 +1,6 @@
 package com.paymentsense.connecte.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,11 +9,14 @@ import lombok.NoArgsConstructor;
 
 /**
  * Payment information retrieved from the API.
+ *
+ * @author Paymentsense SDK Team
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentInfo {
     /**
      * Transaction date and time in ISO 8601 format
@@ -67,6 +71,24 @@ public class PaymentInfo {
      */
     @JsonProperty("cardName")
     private String cardName;
+
+    /**
+     * Billing address
+     */
+    @JsonProperty("billingAddress")
+    private Address billingAddress;
+
+    /**
+     * Shipping details
+     */
+    @JsonProperty("shippingDetails")
+    private ShippingDetails shippingDetails;
+
+    /**
+     * User email address
+     */
+    @JsonProperty("userEmailAddress")
+    private String userEmailAddress;
 
     /**
      * Check if the payment was successful.

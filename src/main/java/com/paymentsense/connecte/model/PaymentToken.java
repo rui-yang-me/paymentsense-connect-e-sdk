@@ -203,6 +203,25 @@ public class PaymentToken {
     private COFSetup cofSetup;
 
     /**
+     * Shipping details including recipient name and address
+     */
+    @JsonProperty("shippingDetails")
+    private ShippingDetails shippingDetails;
+
+    /**
+     * Indicates if this is a new transaction (false for cross-reference
+     * transactions)
+     */
+    @JsonProperty("newTransaction")
+    private Boolean newTransaction;
+
+    /**
+     * Cross reference from a previous transaction for linked/repeat payments
+     */
+    @JsonProperty("crossReference")
+    private String crossReference;
+
+    /**
      * Builder with convenience methods for setting enums.
      */
     public static class PaymentTokenBuilder {

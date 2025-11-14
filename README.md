@@ -128,11 +128,27 @@ See the [examples](src/main/java/com/paymentsense/connecte/examples/) directory 
 - RecurringPaymentExample.java
 - RefundExample.java
 
+## Development
+
+### Building from Source
+
+```bash
+mvn clean install
+```
+
+### Running Tests
+
+```bash
+mvn test
+```
+
 ## Support
 
 - Documentation: https://docs.connect.paymentsense.cloud
-- Issues: https://github.com/paymentsense/connect-e-sdk/issues
+- Issues: https://github.com/rui-yang-me/paymentsense-connect-e-sdk/issues
 
 ## License
 
 Provided by Paymentsense.
+
+Apache License 2.0 - see [LICENSE](LICENSE) file for details.
