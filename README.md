@@ -6,7 +6,7 @@ Official Java SDK for integrating Paymentsense Connect-E payment gateway.
 
 - Simple and intuitive API
 - Full type safety with enums
-- Built with Java 11+
+- Built with Java 17+
 - Minimal dependencies (only Jackson for JSON)
 - Complete API coverage
 - Production-ready with comprehensive error handling
