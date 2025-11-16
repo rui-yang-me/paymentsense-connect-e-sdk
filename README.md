@@ -22,10 +22,18 @@ Official Java SDK for integrating Paymentsense Connect-E payment gateway.
 
 ```xml
 <dependency>
-    <groupId>com.paymentsense</groupId>
-    <artifactId>connect-e-sdk</artifactId>
-    <version>{VERSION}</version>
+    <groupId>io.github.rui-yang-me</groupId>
+    <artifactId>paymentsense-connect-e-sdk</artifactId>
+    <version>1.0.3</version>
 </dependency>
+```
+
+### Troubleshooting Dependency Download
+
+If the dependency fails to download, it might be because the Maven Central index hasn't been updated yet. You can manually download the dependency using:
+
+```bash
+mvn dependency:get -DrepoUrl=https://repo1.maven.org/maven2 -Dartifact=io.github.rui-yang-me:paymentsense-connect-e-sdk:1.0.3 -U
 ```
 
 ## Quick Start
