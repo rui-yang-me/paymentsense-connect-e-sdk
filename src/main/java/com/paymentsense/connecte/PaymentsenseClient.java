@@ -17,17 +17,18 @@ import java.time.Duration;
  * </p>
  *
  * <h3>Example Usage:</h3>
+ * 
  * <pre>{@code
  * PaymentsenseClient client = PaymentsenseClient.builder()
- *     .apiKey("your-api-key")
- *     .environment(Environment.TEST)
- *     .build();
+ *         .apiKey("your-api-key")
+ *         .environment(Environment.TEST)
+ *         .build();
  *
  * PaymentToken token = PaymentToken.builder()
- *     .amount("100")
- *     .currency(CurrencyCode.GBP)
- *     .orderId("order-123")
- *     .build();
+ *         .amount("100")
+ *         .currency(CurrencyCode.GBP)
+ *         .orderId("order-123")
+ *         .build();
  *
  * PaymentTokenResponse response = client.createPaymentToken(token);
  * }</pre>
@@ -85,7 +86,7 @@ public class PaymentsenseClient {
      * voiding an authorization, or collecting a pre-authorized amount.
      * </p>
      *
-     * @param paymentToken the original payment token ID
+     * @param paymentToken payment token ID
      * @param request      the cross-reference payment request
      * @return the cross-reference payment response
      * @throws PaymentsenseException if the request fails
@@ -102,17 +103,61 @@ public class PaymentsenseClient {
      * Convenience method for refunding a payment using its cross-reference ID.
      * </p>
      *
-     * @param paymentToken    the original payment token ID
-     * @param crossReference  the cross-reference ID from the payment
+     * @param paymentToken   payment token ID
+     * @param crossReference the cross-reference ID from the payment
      * @return the refund response
      * @throws PaymentsenseException if the request fails
      */
     public CrossReferencePaymentResponse refundPayment(String paymentToken, String crossReference)
             throws PaymentsenseException {
         CrossReferencePaymentRequest request = CrossReferencePaymentRequest.builder()
-            .crossReference(crossReference)
-            .build();
+                .crossReference(crossReference)
+                .build();
         return executeCrossReferencePayment(paymentToken, request);
+    }
+
+    /**
+     * Resume a payment that was previously paused or requires additional action.
+     * <p>
+     * Use this when a payment flow was interrupted and needs to be resumed.
+     * The access token is the same as the payment token ID from the initial
+     * payment creation.
+     * </p>
+     *
+     * @param accessToken the access token ID from creating the payment token
+     * @return the resume payment response containing status information
+     * @throws PaymentsenseException if the request fails
+     */
+    public ResumePaymentResponse resumePayment(String accessToken) throws PaymentsenseException {
+        return paymentService.resumePayment(accessToken);
+    }
+
+    /**
+     * Revoke an access token to cancel a pending payment.
+     * <p>
+     * This can be used to cancel a payment that hasn't been completed yet.
+     * Once revoked, the payment token cannot be used to complete a payment.
+     * </p>
+     *
+     * @param accessToken the access token to revoke
+     * @throws PaymentsenseException if the request fails
+     */
+    public void revokeAccessToken(String accessToken) throws PaymentsenseException {
+        paymentService.revokeAccessToken(accessToken);
+    }
+
+    /**
+     * Get available payment methods.
+     * <p>
+     * Retrieves information about which card schemes and digital wallets
+     * are supported for payments on your account.
+     * </p>
+     *
+     * @return the payment methods response containing supported card schemes and wallets
+     * @throws PaymentsenseException if the request fails
+     */
+    public PaymentMethodsResponse getPaymentMethods() throws PaymentsenseException {
+        return paymentService.getPaymentMethods();
     }
 
     /**
@@ -245,16 +290,16 @@ public class PaymentsenseClient {
          */
         public PaymentsenseClient build() {
             ClientConfig config = ClientConfig.builder()
-                .apiKey(apiKey)
-                .environment(environment)
-                .timeout(timeout)
-                .sandbox(sandbox)
-                .gatewayUsername(gatewayUsername)
-                .gatewayPassword(gatewayPassword)
-                .merchantUrl(merchantUrl)
-                .webhookUrl(webhookUrl)
-                .userIpAddress(userIpAddress)
-                .build();
+                    .apiKey(apiKey)
+                    .environment(environment)
+                    .timeout(timeout)
+                    .sandbox(sandbox)
+                    .gatewayUsername(gatewayUsername)
+                    .gatewayPassword(gatewayPassword)
+                    .merchantUrl(merchantUrl)
+                    .webhookUrl(webhookUrl)
+                    .userIpAddress(userIpAddress)
+                    .build();
 
             return new PaymentsenseClient(config);
         }

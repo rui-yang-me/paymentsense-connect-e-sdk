@@ -6,7 +6,7 @@ import lombok.Getter;
  * Base exception for all Paymentsense Connect-E SDK errors.
  */
 @Getter
-public class PaymentsenseException extends Exception {
+public class PaymentsenseException extends RuntimeException {
     /**
      * Optional error code
      */

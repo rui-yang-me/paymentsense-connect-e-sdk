@@ -13,7 +13,7 @@ Official Java SDK for integrating Paymentsense Connect-E payment gateway.
 
 ## Requirements
 
-- Java 11+
+- Java 17+
 - Maven 3.6+
 
 ## Installation
@@ -24,7 +24,7 @@ Official Java SDK for integrating Paymentsense Connect-E payment gateway.
 <dependency>
     <groupId>com.paymentsense</groupId>
     <artifactId>connect-e-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>{VERSION}</version>
 </dependency>
 ```
 
@@ -120,13 +120,6 @@ try {
     // Generic error
 }
 ```
-
-## Documentation
-
-See the [examples](src/main/java/com/paymentsense/connecte/examples/) directory for complete examples:
-- BasicPaymentExample.java
-- RecurringPaymentExample.java
-- RefundExample.java
 
 ## Development
 

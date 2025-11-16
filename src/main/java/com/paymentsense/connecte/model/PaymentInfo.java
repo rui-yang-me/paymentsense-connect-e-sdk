@@ -2,6 +2,7 @@ package com.paymentsense.connecte.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.paymentsense.connecte.model.enums.PaymentStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +26,14 @@ public class PaymentInfo {
     private String transactionDateTime;
 
     /**
-     * Status code (0 = success, other values indicate errors)
+     * Status code of the payment operation.
+     * <p>
+     * See {@link PaymentStatusCode} for all possible status codes and their
+     * meanings.
+     * </p>
      */
     @JsonProperty("statusCode")
-    private Integer statusCode;
+    private PaymentStatusCode statusCode;
 
     /**
      * Human-readable message about the transaction
@@ -93,9 +98,27 @@ public class PaymentInfo {
     /**
      * Check if the payment was successful.
      *
-     * @return true if statusCode is 0, false otherwise
+     * @return true if statusCode indicates success, false otherwise
      */
     public boolean isSuccess() {
-        return statusCode != null && statusCode == 0;
+        return statusCode != null && statusCode.isSuccessful();
+    }
+
+    /**
+     * Check if the payment failed.
+     *
+     * @return true if the status code indicates failure
+     */
+    public boolean isFailed() {
+        return statusCode != null && statusCode.isFailed();
+    }
+
+    /**
+     * Check if the payment is still in progress.
+     *
+     * @return true if the status code indicates the payment is in progress
+     */
+    public boolean isInProgress() {
+        return statusCode != null && statusCode.isInProgress();
     }
 }

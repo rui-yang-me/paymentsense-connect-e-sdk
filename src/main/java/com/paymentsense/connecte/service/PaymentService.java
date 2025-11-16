@@ -51,9 +51,6 @@ public class PaymentService {
         // Validate required fields
         validatePaymentToken(paymentToken);
 
-        // Fill in config defaults for optional fields
-        fillConfigDefaults(paymentToken);
-
         String url = config.getApiUrl() + "/access-tokens";
         String requestBody = serializeToJson(paymentToken);
 
@@ -89,7 +86,9 @@ public class PaymentService {
     public CrossReferencePaymentResponse executeCrossReferencePayment(
             String paymentToken,
             CrossReferencePaymentRequest request) throws PaymentsenseException {
-
+        if (request.getCrossReference() == null || request.getCrossReference().isEmpty()) {
+            throw ValidationException.forField("crossReference", "Cross-reference ID is required and cannot be empty");
+        }
         String url = config.getApiUrl() + "/cross-reference-payments/" + paymentToken;
         String requestBody = serializeToJson(request);
 
@@ -97,6 +96,54 @@ public class PaymentService {
         String responseBody = executeRequest(httpRequest);
 
         return deserializeFromJson(responseBody, CrossReferencePaymentResponse.class);
+    }
+
+    /**
+     * Resume a payment that was previously paused or requires additional action.
+     *
+     * @param accessToken the access token ID from creating the payment token
+     * @return the resume payment response
+     * @throws PaymentsenseException if the request fails
+     */
+    public ResumePaymentResponse resumePayment(String accessToken) throws PaymentsenseException {
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw ValidationException.forField("accessToken", "Access token is required and cannot be empty");
+        }
+        String url = config.getApiUrl() + "/payments/" + accessToken + "/resume";
+        HttpRequest request = buildPostRequest(url, "");
+        String responseBody = executeRequest(request);
+
+        return deserializeFromJson(responseBody, ResumePaymentResponse.class);
+    }
+
+    /**
+     * Revoke an access token to cancel a pending payment.
+     *
+     * @param accessToken the access token to revoke
+     * @throws PaymentsenseException if the request fails
+     */
+    public void revokeAccessToken(String accessToken) throws PaymentsenseException {
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw ValidationException.forField("accessToken", "Access token is required and cannot be empty");
+        }
+        String url = config.getApiUrl() + "/access-tokens/" + accessToken + "/revoke";
+        HttpRequest request = buildPostRequest(url, "");
+        executeRequest(request);
+        // No response body to deserialize for successful revocation
+    }
+
+    /**
+     * Get available payment methods (card schemes and wallets).
+     *
+     * @return the payment methods response
+     * @throws PaymentsenseException if the request fails
+     */
+    public PaymentMethodsResponse getPaymentMethods() throws PaymentsenseException {
+        String url = config.getApiUrl() + "/payment-methods";
+        HttpRequest request = buildGetRequest(url);
+        String responseBody = executeRequest(request);
+
+        return deserializeFromJson(responseBody, PaymentMethodsResponse.class);
     }
 
     /**
@@ -260,27 +307,6 @@ public class PaymentService {
         // Validate order ID (required)
         if (token.getOrderId() == null || token.getOrderId().isEmpty()) {
             throw new ValidationException("Order ID is required and cannot be empty");
-        }
-    }
-
-    /**
-     * Fill in configuration defaults for optional fields.
-     * Note: merchantUrl is now required and must be provided by the caller.
-     *
-     * @param token the payment token to fill
-     */
-    private void fillConfigDefaults(PaymentToken token) {
-        // Fill webhook URL from config if not provided
-        if (token.getWebhookUrl() == null && config.getWebhookUrl() != null) {
-            token.setWebhookUrl(config.getWebhookUrl());
-        }
-
-        // Fill gateway credentials from config if not provided
-        if (token.getGatewayUsername() == null && config.getGatewayUsername() != null) {
-            token.setGatewayUsername(config.getGatewayUsername());
-        }
-        if (token.getGatewayPassword() == null && config.getGatewayPassword() != null) {
-            token.setGatewayPassword(config.getGatewayPassword());
         }
     }
 }

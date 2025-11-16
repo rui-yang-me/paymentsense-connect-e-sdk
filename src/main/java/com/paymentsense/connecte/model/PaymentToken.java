@@ -1,5 +1,6 @@
 package com.paymentsense.connecte.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.paymentsense.connecte.model.enums.CurrencyCode;
@@ -21,12 +22,10 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentToken {
     /**
-     * Payment amount in minor currency units (e.g., pence for GBP)
-     * Example: "100" represents £1.00
-     * pattern: ^\d+$
+     * Merchant URL (required for CyberSource gateway)
      */
-    @JsonProperty("amount")
-    private String amount;
+    @JsonProperty("merchantUrl")
+    private String merchantUrl;
 
     /**
      * ISO 4217 numeric currency code
@@ -36,6 +35,14 @@ public class PaymentToken {
      */
     @JsonProperty("currencyCode")
     private String currencyCode;
+
+    /**
+     * Payment amount in minor currency units (e.g., pence for GBP)
+     * Example: "100" represents £1.00
+     * pattern: ^\d+$
+     */
+    @JsonProperty("amount")
+    private String amount;
 
     /**
      * Transaction type (SALE, PREAUTH, REFUND, COLLECTION, VOID)
@@ -64,6 +71,19 @@ public class PaymentToken {
     private String orderDescription;
 
     /**
+     * Merchant generated transaction ID to uniquely identify the transaction. If
+     * included must be unique for each access token
+     */
+    @JsonProperty("merchantTransactionId")
+    private String merchantTransactionId;
+
+    /**
+     * User agent string from the customer's browser
+     */
+    @JsonProperty("userAgent")
+    private String userAgent;
+
+    /**
      * User's email address
      */
     @JsonProperty("userEmailAddress")
@@ -80,61 +100,6 @@ public class PaymentToken {
      */
     @JsonProperty("userIpAddress")
     private String userIpAddress;
-
-    /**
-     * User agent string from the customer's browser
-     */
-    @JsonProperty("userAgent")
-    private String userAgent;
-
-    /**
-     * Gateway username (required for non-CyberSource gateways)
-     */
-    @JsonProperty("gatewayUsername")
-    private String gatewayUsername;
-
-    /**
-     * Gateway password (required for non-CyberSource gateways)
-     */
-    @JsonProperty("gatewayPassword")
-    private String gatewayPassword;
-
-    /**
-     * Merchant URL (required for CyberSource gateway)
-     */
-    @JsonProperty("merchantUrl")
-    private String merchantUrl;
-
-    /**
-     * Merchant generated transaction ID to uniquely identify the transaction. If
-     * included must be unique for each access token
-     */
-    @JsonProperty("merchantTransactionId")
-    private String merchantTransactionId;
-
-    /**
-     * Previous transaction ID for linked transactions
-     */
-    @JsonProperty("previousTransactionId")
-    private String previousTransactionId;
-
-    /**
-     * Customer identifier
-     */
-    @JsonProperty("customerId")
-    private String customerId;
-
-    /**
-     * Saved payment method ID for recurring payments
-     */
-    @JsonProperty("paymentMethodId")
-    private String paymentMethodId;
-
-    /**
-     * Webhook URL for payment status notifications
-     */
-    @JsonProperty("webhookUrl")
-    private String webhookUrl;
 
     /**
      * User address line 1
@@ -185,24 +150,6 @@ public class PaymentToken {
     private String userCountryCode;
 
     /**
-     * Wait for pre-execute hook
-     */
-    @JsonProperty("waitPreExecute")
-    private Boolean waitPreExecute;
-
-    /**
-     * Custom metadata key-value pairs
-     */
-    @JsonProperty("metaData")
-    private Map<String, String> metaData;
-
-    /**
-     * Card-on-File setup configuration
-     */
-    @JsonProperty("cofSetup")
-    private COFSetup cofSetup;
-
-    /**
      * Shipping details including recipient name and address
      */
     @JsonProperty("shippingDetails")
@@ -222,6 +169,30 @@ public class PaymentToken {
     private String crossReference;
 
     /**
+     * Webhook URL for payment status notifications
+     */
+    @JsonProperty("webhookUrl")
+    private String webhookUrl;
+
+    /**
+     * Custom metadata key-value pairs
+     */
+    @JsonProperty("metaData")
+    private Map<String, String> metaData;
+
+    /**
+     * Wait for pre-execute hook
+     */
+    @JsonProperty("waitPreExecute")
+    private Boolean waitPreExecute;
+
+    /**
+     * Customer identifier
+     */
+    @JsonProperty("customerId")
+    private String customerId;
+
+    /**
      * Builder with convenience methods for setting enums.
      */
     public static class PaymentTokenBuilder {
@@ -232,7 +203,7 @@ public class PaymentToken {
          * @return the builder
          */
         public PaymentTokenBuilder currency(CurrencyCode currency) {
-            this.currencyCode = currency.getCode();
+            this.currencyCode = currency.getNumber();
             return this;
         }
     }
